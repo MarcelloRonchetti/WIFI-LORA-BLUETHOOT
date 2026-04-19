@@ -1351,6 +1351,439 @@ footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;co
   </div>
 </section>
 
+
+
+<!-- ══════════════ BLE ══════════════ -->
+<section class="section" id="sec-ble">
+  <div class="sec-head">
+    <div class="sec-num">05</div>
+    <div class="sec-body">
+      <h2>Bluetooth Low Energy</h2>
+      <p>Introdotto con BT 4.0 (2010) da Nokia (Wibree). Consumo fino a 100× inferiore al Classic. Lo standard IoT per sensori, wearable e beacon.</p>
+    </div>
+    <span class="sec-badge b-purple">BLE · IoT</span>
+  </div>
+
+  <div class="grid g4" style="margin-bottom:1.25rem">
+    <div class="stat"><div class="val" style="color:#c084fc">~300</div><div class="stat-lbl">Kbps data rate</div></div>
+    <div class="stat"><div class="val" style="color:#c084fc">40</div><div class="stat-lbl">Canali da 2 MHz</div></div>
+    <div class="stat"><div class="val" style="color:#c084fc">100m</div><div class="stat-lbl">Copertura max</div></div>
+    <div class="stat"><div class="val" style="color:#c084fc">100×</div><div class="stat-lbl">Meno consumo vs Classic</div></div>
+  </div>
+
+  <div class="grid g2">
+    <!-- PHY Modes -->
+    <div class="box">
+      <div class="box-title">Livelli fisici PHY — Modulazione GFSK</div>
+      <p style="font-size:.82rem;font-family:var(--serif);color:rgba(10,10,15,.6);margin-bottom:1rem">
+        GFSK: la frequenza portante viene spostata di ±185 kHz per rappresentare bit 0/1. Il filtro Gaussiano riduce il rumore alle transizioni.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:.5rem">
+        <div style="padding:.75rem;border-radius:6px;background:var(--purple-l);border:1px solid rgba(124,58,237,.2)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span class="badge b-purple" style="margin:0">LE 1M PHY — Obbligatorio</span>
+            <code style="font-size:.7rem;font-family:var(--mono)">1 Ms/s · ±185 kHz</code>
+          </div>
+          <p style="font-family:var(--serif);font-size:.82rem">Bilanciato tra velocità, portata e consumo. Tutti i dispositivi devono supportarlo.</p>
+        </div>
+        <div style="padding:.75rem;border-radius:6px;background:var(--blue-l);border:1px solid rgba(37,99,235,.2)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span class="badge b-blue" style="margin:0">LE 2M PHY — Opzionale</span>
+            <code style="font-size:.7rem;font-family:var(--mono)">2 Ms/s · ±370 kHz</code>
+          </div>
+          <p style="font-family:var(--serif);font-size:.82rem">Metà tempo in aria → meno consumo ad alta velocità. Range lievemente ridotto (×0.8).</p>
+        </div>
+        <div style="padding:.75rem;border-radius:6px;background:var(--teal-l);border:1px solid rgba(5,150,105,.2)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span class="badge b-teal" style="margin:0">LE Coded PHY — Opzionale</span>
+            <code style="font-size:.7rem;font-family:var(--mono)">1 Ms/s + FEC</code>
+          </div>
+          <p style="font-family:var(--serif);font-size:.82rem">Forward Error Correction. S=2 → range ×2 · S=8 → range ×4 (500 Kbps o 125 Kbps).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLE Stack -->
+    <div class="box">
+      <div class="box-title">Stack BLE</div>
+      <div class="stack-proto" style="margin-bottom:.75rem">
+        <div class="stack-layer sl-app"><span>Applicazione utente</span><span class="sl-tag">Top</span></div>
+        <div class="stack-layer sl-app"><span>GAP — Generic Access Profile (ruoli, visibilità)</span><span class="sl-tag">App</span></div>
+        <div class="stack-layer sl-high"><span>GATT — Generic Attribute Profile (servizi/caratteristiche)</span><span class="sl-tag">Alto</span></div>
+        <div class="stack-layer sl-high"><span>ATT — Attribute Protocol (client/server UUID)</span><span class="sl-tag">Alto</span></div>
+        <div class="stack-layer sl-link"><span>SMP — Security Manager · L2CAP</span><span class="sl-tag">Sicurezza</span></div>
+        <div class="stack-layer sl-link"><span>HCI — Host Controller Interface</span><span class="sl-tag">HCI</span></div>
+        <div class="stack-layer sl-base"><span>LL — Link Layer (master/slave, timing pacchetti)</span><span class="sl-tag">LL</span></div>
+        <div class="stack-layer sl-radio"><span>PHY — GFSK · 40 canali da 2 MHz</span><span class="sl-tag">HW</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dispositivi BLE -->
+  <div class="divider"></div>
+  <div class="grid g3" style="margin-bottom:1.25rem">
+    <div class="box">
+      <span class="badge b-purple">TAG</span>
+      <h3>Localizzatori</h3>
+      <p>Piccoli dispositivi applicati a risorse o persone. Varie forme: rettangolare, tondo, braccialetto. Trasmettono continuamente il proprio segnale BLE.</p>
+    </div>
+    <div class="box">
+      <span class="badge b-blue">Beacon</span>
+      <h3>Infrastruttura</h3>
+      <p>Dispositivi fissi ancorati a pareti/soffitti ogni 2–5 m. Più beacons = maggiore precisione. Ricevono i segnali dai TAG e li inoltrano.</p>
+    </div>
+    <div class="box">
+      <span class="badge b-teal">Gateway BLE</span>
+      <h3>Hub e Cloud</h3>
+      <p>Collega i dispositivi BLE a cloud/server. Aggrega i flussi dati riducendo la congestione di rete. Funge da centrale hub per più dispositivi.</p>
+    </div>
+  </div>
+
+  <!-- RTLS -->
+  <div class="box" style="margin-bottom:1.25rem">
+    <div class="box-title">RTLS — Real-Time Locating Systems</div>
+    <div class="grid g3">
+      <div class="callout c-blue" style="margin:0">
+        <strong>RSSI — Received Signal Strength</strong>
+        Usa la potenza ricevuta per stimare la distanza (trilaterazione). Precisione max ±3m. Economico ma influenzato da riflessioni e ostacoli.
+      </div>
+      <div class="callout c-teal" style="margin:0">
+        <strong>AoA — Angle of Arrival</strong>
+        Array di antenne rileva angolo di arrivo del segnale. Sufficiente una sola antenna per localizzare un TAG. Alta precisione sub-metro.
+      </div>
+      <div class="callout c-purple" style="margin:0">
+        <strong>AoD — Angle of Departure</strong>
+        Introdotto in BT 5.1. L'anchor trasmette e il TAG riceve su più antenne. Permette di determinare anche la direzione dell'oggetto rilevato.
+      </div>
+    </div>
+  </div>
+
+  <!-- Evoluzioni -->
+  <div class="box">
+    <div class="box-title">Evoluzioni BT 5.x</div>
+    <div class="grid g2">
+      <div>
+        <span class="badge b-dark">BT 5.1 — 2016</span>
+        <div style="font-family:var(--mono);font-size:1.1rem;font-weight:600;margin:.4rem 0">2 Mbps · 200m outdoor</div>
+        <p style="font-family:var(--serif);font-size:.85rem">Ampia gamma di funzionalità. Supporto direction finding. Adatto per applicazioni multi-dispositivo wireless.</p>
+      </div>
+      <div>
+        <span class="badge b-dark">BT 5.2 — 2019</span>
+        <div style="font-family:var(--mono);font-size:1.1rem;font-weight:600;margin:.4rem 0">2 Mbps · 200m outdoor</div>
+        <p style="font-family:var(--serif);font-size:.85rem">Miglioramenti nel <strong>rilevamento direzione</strong> (AoA/AoD). Enhanced Attribute Protocol (EATT). LE Isochronous Channels per audio.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ LORA ══════════════ -->
+<section class="section" id="sec-lora">
+  <div class="sec-head">
+    <div class="sec-num">06</div>
+    <div class="sec-body">
+      <h2>LoRa / LoRaWAN</h2>
+      <p>LPWAN a lungo raggio per IoT rurale e urbano. LoRa = livello fisico CSS · LoRaWAN = protocollo di rete (MAC layer).</p>
+    </div>
+    <span class="sec-badge b-teal">LPWAN · 868 MHz</span>
+  </div>
+
+  <div class="grid g4" style="margin-bottom:1.25rem">
+    <div class="stat"><div class="val" style="color:#34d399">15 km</div><div class="stat-lbl">Range campo aperto</div></div>
+    <div class="stat"><div class="val" style="color:#34d399">154 dB</div><div class="stat-lbl">Link budget max</div></div>
+    <div class="stat"><div class="val" style="color:#34d399">105 mo</div><div class="stat-lbl">Batteria 2000 mAh</div></div>
+    <div class="stat"><div class="val" style="color:#34d399">1%</div><div class="stat-lbl">Duty cycle max</div></div>
+  </div>
+
+  <div class="grid g2">
+    <!-- Architecture -->
+    <div class="box">
+      <div class="box-title">Architettura Star-of-Stars</div>
+      <div style="display:flex;flex-direction:column;gap:8px;padding:.5rem 0">
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center">
+          <div style="width:44px;height:44px;border-radius:8px;background:var(--teal-l);border:1px solid rgba(5,150,105,.3);display:flex;align-items:center;justify-content:center;font-size:18px">📡</div>
+          <div><div class="lbl" style="color:var(--teal)">End Devices</div><p style="font-size:.8rem;font-family:var(--serif)">Sensori LoRa — trasmettono a tutti i gateway vicini</p></div>
+        </div>
+        <div style="margin-left:22px;width:1px;height:20px;background:var(--border)"></div>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center">
+          <div style="width:44px;height:44px;border-radius:8px;background:var(--blue-l);border:1px solid rgba(37,99,235,.3);display:flex;align-items:center;justify-content:center;font-size:18px">🔀</div>
+          <div><div class="lbl" style="color:var(--blue)">Gateway</div><p style="font-size:.8rem;font-family:var(--serif)">Concentratore trasparente → forward via IP/4G al Network Server</p></div>
+        </div>
+        <div style="margin-left:22px;width:1px;height:20px;background:var(--border)"></div>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center">
+          <div style="width:44px;height:44px;border-radius:8px;background:var(--orange-l);border:1px solid rgba(217,119,6,.3);display:flex;align-items:center;justify-content:center;font-size:18px">☁️</div>
+          <div><div class="lbl" style="color:var(--orange)">Network Server</div><p style="font-size:.8rem;font-family:var(--serif)">De-duplica i pacchetti, gestisce ADR, sicurezza, routing</p></div>
+        </div>
+        <div style="margin-left:22px;width:1px;height:20px;background:var(--border)"></div>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center">
+          <div style="width:44px;height:44px;border-radius:8px;background:var(--purple-l);border:1px solid rgba(124,58,237,.3);display:flex;align-items:center;justify-content:center;font-size:18px">🖥️</div>
+          <div><div class="lbl" style="color:var(--purple)">Application Server</div><p style="font-size:.8rem;font-family:var(--serif)">Dati finali decifrati e disponibili all'applicazione utente</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SF Bars -->
+    <div class="box">
+      <div class="box-title">Spreading Factor a 125 kHz</div>
+      <p style="font-size:.82rem;font-family:var(--serif);color:rgba(10,10,15,.6);margin-bottom:1rem">
+        CSS (Chirp Spread Spectrum): la frequenza del chirp varia linearmente. I dati sono codificati nella frequenza iniziale del chirp. SF più alto = più portata, meno velocità.
+      </p>
+      <div id="sfBars"></div>
+      <div class="callout c-teal" style="margin-top:1rem;margin-bottom:0">
+        <strong>ADR — Adaptive Data Rate</strong>
+        Il Network Server adatta dinamicamente SF, BW e potenza. Al primo collegamento → SF12. Quando il segnale migliora → SF scende per velocizzare e risparmiare. Usare solo con nodi fermi.
+      </div>
+    </div>
+  </div>
+
+  <div class="grid g3" style="margin-top:1rem">
+    <div class="box">
+      <span class="badge b-red">Classe A — Battery</span>
+      <h3>Ultra Low Power</h3>
+      <p>Uplink + 2 brevi finestre downlink. La modalità più efficiente energeticamente. Obbligatoria per tutti i dispositivi LoRaWAN.</p>
+    </div>
+    <div class="box">
+      <span class="badge b-teal">Classe B — Beacon</span>
+      <h3>Slot Programmati</h3>
+      <p>Come A + finestre di ricezione aggiuntive schedulate tramite beacon del gateway. Latenza downlink prevedibile.</p>
+    </div>
+    <div class="box">
+      <span class="badge b-blue">Classe C — Continuous</span>
+      <h3>Ascolto Continuo</h3>
+      <p>Finestra di ricezione sempre aperta. Latenza minima in downlink. Maggiore consumo → solitamente alimentati a rete.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ NB-IOT ══════════════ -->
+<section class="section" id="sec-nbiot">
+  <div class="sec-head">
+    <div class="sec-num">07</div>
+    <div class="sec-body">
+      <h2>NB-IoT — Narrowband IoT</h2>
+      <p>LPWAN cellulare su banda licenziata 800 MHz. Opera su infrastruttura LTE esistente. 3GPP Release 13. SIM card M2M.</p>
+    </div>
+    <span class="sec-badge b-orange">Cellulare · 800 MHz</span>
+  </div>
+
+  <div class="grid g4" style="margin-bottom:1.25rem">
+    <div class="stat"><div class="val" style="color:#f59e0b">~20</div><div class="stat-lbl">Kbps upload</div></div>
+    <div class="stat"><div class="val" style="color:#f59e0b">50K</div><div class="stat-lbl">Device/cella</div></div>
+    <div class="stat"><div class="val" style="color:#f59e0b">10+</div><div class="stat-lbl">Anni batteria</div></div>
+    <div class="stat"><div class="val" style="color:#f59e0b">180kHz</div><div class="stat-lbl">Larghezza canale</div></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="box">
+      <div class="box-title">Caratteristiche tecniche</div>
+      <table class="tbl">
+        <tbody>
+          <tr><td style="color:rgba(10,10,15,.5)">Banda</td><td><strong>800 MHz</strong> (licenziata)</td></tr>
+          <tr><td style="color:rgba(10,10,15,.5)">Modulazione</td><td>QPSK</td></tr>
+          <tr><td style="color:rgba(10,10,15,.5)">Accesso</td><td>FDMA uplink · OFDMA downlink</td></tr>
+          <tr><td style="color:rgba(10,10,15,.5)">SIM</td><td>Sì — M2M</td></tr>
+          <tr><td style="color:rgba(10,10,15,.5)">Deep indoor</td><td>Raggiunge cantine e tombini</td></tr>
+          <tr><td style="color:rgba(10,10,15,.5)">Range</td><td>10+ km outdoor</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box">
+      <div class="box-title">SIM Card IoT M2M</div>
+      <div class="callout c-orange" style="margin-bottom:.75rem">
+        <strong>IP fisso pubblico</strong>
+        Permette accesso remoto al dispositivo senza aspettare che invii dati. Maggiore controllo e sicurezza. Ideale per contatori, attuatori.
+      </div>
+      <div class="callout c-blue" style="margin-bottom:.75rem">
+        <strong>Multi-operatore</strong>
+        La SIM si connette automaticamente all'operatore con segnale migliore. Failover automatico in roaming.
+      </div>
+      <div class="grid g2" style="gap:.5rem">
+        <div style="padding:.7rem;background:rgba(10,10,15,.04);border-radius:6px;border:1px solid var(--border)">
+          <div class="lbl">SIM Standard</div>
+          <p style="font-size:.78rem;font-family:var(--serif)">−25°C a +85°C · uso normale</p>
+        </div>
+        <div style="padding:.7rem;background:var(--orange-l);border-radius:6px;border:1px solid rgba(217,119,6,.2)">
+          <div class="lbl" style="color:var(--orange)">SIM Industriale</div>
+          <p style="font-size:.78rem;font-family:var(--serif)">−40°C a +105°C · vibrazioni</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sigfox -->
+  <div class="box" style="margin-top:1rem">
+    <div class="box-title">Sigfox — Ultra Narrow Band (UNB)</div>
+    <div class="grid g3">
+      <div class="callout c-orange" style="margin:0;grid-column:1/-1">
+        <strong>Principio UNB</strong>
+        Ogni nodo occupa pochi cento Hz di banda. Banda più stretta → rumore più basso (−154 dBm per 100 Hz). Range fino a 50 km. Limite: max 140 msg/giorno, payload 12 byte, 1 msg ogni 10 min.
+      </div>
+      <div class="stat"><div class="val" style="color:#f59e0b">140</div><div class="stat-lbl">Messaggi uplink/giorno</div></div>
+      <div class="stat"><div class="val" style="color:#f59e0b">50 km</div><div class="stat-lbl">Range dal gateway</div></div>
+      <div class="stat"><div class="val" style="color:#f59e0b">12 B</div><div class="stat-lbl">Payload max</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ 5G ══════════════ -->
+<section class="section" id="sec-5g">
+  <div class="sec-head">
+    <div class="sec-num">08</div>
+    <div class="sec-body">
+      <h2>5G per IoT</h2>
+      <p>Rete convergente eterogenea su licenza + non-licenza. 1 milione di dispositivi/km² (10× il 4G). Network slicing per uso multi-servizio.</p>
+    </div>
+    <span class="sec-badge b-red">5G · mMTC</span>
+  </div>
+
+  <div class="box" style="margin-bottom:1.25rem">
+    <div class="box-title">Bande di frequenza</div>
+    <div style="display:flex;flex-direction:column;gap:8px;padding:.5rem 0">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:70px;font-family:var(--mono);font-size:.72rem;color:rgba(10,10,15,.45);text-align:right">700 MHz</div>
+        <div style="flex:.3;height:36px;background:var(--teal-l);border:1px solid rgba(5,150,105,.3);border-radius:6px;display:flex;align-items:center;padding:0 12px">
+          <span style="font-size:.75rem;font-weight:700;color:var(--teal);font-family:var(--sans)">Banda bassa</span>
+        </div>
+        <div style="font-size:.78rem;color:rgba(10,10,15,.55);font-family:var(--serif)">Lungo range · superiore al 4G · aree remote</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:70px;font-family:var(--mono);font-size:.72rem;color:rgba(10,10,15,.45);text-align:right">3.7 GHz</div>
+        <div style="flex:.55;height:36px;background:var(--blue-l);border:1px solid rgba(37,99,235,.3);border-radius:6px;display:flex;align-items:center;padding:0 12px">
+          <span style="font-size:.75rem;font-weight:700;color:var(--blue);font-family:var(--sans)">Sub-6 GHz — Banda media</span>
+        </div>
+        <div style="font-size:.78rem;color:rgba(10,10,15,.55);font-family:var(--serif)">Bilanciata · la più diffusa in Italia</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:70px;font-family:var(--mono);font-size:.72rem;color:rgba(10,10,15,.45);text-align:right">26 GHz</div>
+        <div style="flex:1;height:36px;background:var(--red-l);border:1px solid rgba(220,38,38,.3);border-radius:6px;display:flex;align-items:center;padding:0 12px">
+          <span style="font-size:.75rem;font-weight:700;color:var(--red);font-family:var(--sans)">mmWave — Banda alta · massima velocità · corto range · molti ripetitori</span>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:.78rem;font-family:var(--serif);color:rgba(10,10,15,.5);margin-top:.5rem">⚠️ In Italia la mmWave è quasi inesistente: costi elevati di apparecchiature e densità di ripetitori.</p>
+  </div>
+
+  <div class="grid g3">
+    <div class="box" style="border-top:3px solid var(--teal)">
+      <span class="badge b-teal">mMTC — IoT Slice</span>
+      <h3>Alta Densità</h3>
+      <p>Milioni di dispositivi a basso consumo. Sensori ambientali, contatori intelligenti, asset tracker urbani.</p>
+    </div>
+    <div class="box" style="border-top:3px solid var(--blue)">
+      <span class="badge b-blue">URLLC — Critico</span>
+      <h3>Ultra-Bassa Latenza</h3>
+      <p>Veicoli autonomi, controllo industriale, telemedicina real-time. Latenza &lt;1 ms, affidabilità 99.9999%.</p>
+    </div>
+    <div class="box" style="border-top:3px solid var(--red)">
+      <span class="badge b-red">eMBB — Banda larga</span>
+      <h3>Alta Larghezza di Banda</h3>
+      <p>Streaming 4K/8K, AR/VR, download ultra-rapidi. Fino a 20 Gbps picco in downlink.</p>
+    </div>
+  </div>
+
+  <div class="box" style="margin-top:1rem">
+    <div class="box-title">Tecniche accesso 5G per IoT</div>
+    <table class="tbl">
+      <thead><tr><th>Tecnologia</th><th>Banda</th><th>Velocità</th><th>Caso d'uso</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge b-orange">NB-IoT</span></td><td>180 kHz</td><td style="font-family:var(--mono);font-size:.8rem">~20 Kbps</td><td>Bassa complessità, deep indoor, batteria lunga</td></tr>
+        <tr><td><span class="badge b-blue">LTE-M (eMTC)</span></td><td>1.4 MHz</td><td style="font-family:var(--mono);font-size:.8rem">1 Mbps</td><td>Mobilità, roaming, voce IoT</td></tr>
+        <tr><td><span class="badge b-teal">RedCap (Rel.17)</span></td><td>5G nativo</td><td style="font-family:var(--mono);font-size:.8rem">Variable</td><td>IoT 5G nativo a complessità ridotta rispetto al 5G full</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════ CONFRONTO ══════════════ -->
+<section class="section" id="sec-compare">
+  <div class="sec-head">
+    <div class="sec-num">09</div>
+    <div class="sec-body">
+      <h2>Confronto Tecnologie</h2>
+      <p>Panoramica comparativa di tutti gli standard wireless IoT: dalla portata al consumo energetico, dalla modulazione alla topologia.</p>
+    </div>
+    <span class="sec-badge b-yellow">Comparazione</span>
+  </div>
+
+  <!-- Positioning chart -->
+  <div class="box" style="margin-bottom:1.25rem">
+    <div class="box-title">Posizionamento — Portata vs Data Rate</div>
+    <div class="pos-chart">
+      <div class="pos-label-x">PORTATA →</div>
+      <div class="pos-label-y">DATA RATE</div>
+      <div class="pos-axis-x"></div>
+      <div class="pos-axis-y"></div>
+      <!-- Nodes positioned: left=range, bottom=data rate -->
+      <!-- BLE: high rate, short range -->
+      <div class="pos-node" style="left:16%;bottom:72%;width:52px;height:52px;background:var(--blue-l);border-color:var(--blue);color:var(--blue)">BLE<div class="pos-sub">300K · ~100m</div></div>
+      <!-- WiFi: very high rate, short range -->
+      <div class="pos-node" style="left:22%;bottom:88%;width:54px;height:54px;background:rgba(180,83,9,.1);border-color:var(--yellow);color:var(--yellow)">Wi-Fi<div class="pos-sub">Gbps · 50m</div></div>
+      <!-- BT Classic -->
+      <div class="pos-node" style="left:14%;bottom:60%;width:48px;height:48px;background:var(--purple-l);border-color:var(--purple);color:var(--purple)">BT<div class="pos-sub">3M · 100m</div></div>
+      <!-- LoRa: long range, low rate -->
+      <div class="pos-node" style="left:75%;bottom:18%;width:54px;height:54px;background:var(--teal-l);border-color:var(--teal);color:var(--teal)">LoRa<div class="pos-sub">50K · 15km</div></div>
+      <!-- NB-IoT -->
+      <div class="pos-node" style="left:65%;bottom:14%;width:52px;height:52px;background:var(--orange-l);border-color:var(--orange);color:var(--orange)">NB-IoT<div class="pos-sub">20K · 10km</div></div>
+      <!-- Sigfox -->
+      <div class="pos-node" style="left:85%;bottom:8%;width:50px;height:50px;background:var(--red-l);border-color:var(--red);color:var(--red)">Sigfox<div class="pos-sub">100b · 50km</div></div>
+      <!-- 4G/5G -->
+      <div class="pos-node" style="left:50%;bottom:82%;width:52px;height:52px;background:rgba(10,10,15,.07);border-color:rgba(10,10,15,.3);color:rgba(10,10,15,.7)">4G/5G<div class="pos-sub">Gbps · naz.</div></div>
+    </div>
+  </div>
+
+  <!-- Compare table -->
+  <div class="box" style="margin-bottom:1.25rem">
+    <div class="box-title">Tabella comparativa completa</div>
+    <div class="compare-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Parametro</th>
+            <th style="color:var(--blue)">BLE</th>
+            <th style="color:var(--purple)">BT Classic</th>
+            <th style="color:var(--teal)">LoRaWAN</th>
+            <th style="color:var(--orange)">NB-IoT</th>
+            <th style="color:var(--red)">Sigfox</th>
+            <th>5G mMTC</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="color:rgba(10,10,15,.5)">Range</td><td>~100m</td><td>10–100m</td><td style="color:var(--teal);font-weight:600">15 km</td><td>10 km+</td><td style="color:var(--teal);font-weight:600">50 km</td><td>Variable</td></tr>
+          <tr><td style="color:rgba(10,10,15,.5)">Data Rate</td><td style="color:var(--blue);font-weight:600">300 Kbps</td><td style="color:var(--purple);font-weight:600">1–3 Mbps</td><td>290b–50K</td><td>~20 Kbps</td><td>100 bps</td><td>200K–1M</td></tr>
+          <tr><td style="color:rgba(10,10,15,.5)">Consumo</td><td style="color:var(--teal)">Molto basso</td><td>Medio</td><td style="color:var(--teal)">Molto basso</td><td style="color:var(--teal)">Molto basso</td><td style="color:var(--teal)">Molto basso</td><td>Medio</td></tr>
+          <tr><td style="color:rgba(10,10,15,.5)">Batteria</td><td>Mesi–anni</td><td>Giorni</td><td>105 mesi</td><td>10+ anni</td><td>12+ anni</td><td>18 mesi</td></tr>
+          <tr><td style="color:rgba(10,10,15,.5)">Licenza</td><td>No</td><td>No</td><td>No</td><td style="color:var(--red)">Sì</td><td>No</td><td style="color:var(--red)">Sì</td></tr>
+          <tr><td style="color:rgba(10,10,15,.5)">Frequenza</td><td>2.4 GHz</td><td>2.4 GHz</td><td>868 MHz</td><td>800 MHz</td><td>Sub-GHz</td><td>700M–26G</td></tr>
+          <tr><td style="color:rgba(10,10,15,.5)">Modulazione</td><td>GFSK</td><td>GFSK/DQPSK</td><td>CSS Chirp</td><td>QPSK</td><td>UNB/BPSK</td><td>OFDMA</td></tr>
+          <tr><td style="color:rgba(10,10,15,.5)">Topologia</td><td>P2P/Mesh</td><td>Master/Slave</td><td>Star-of-Stars</td><td>Cellulare</td><td>Star</td><td>Cellulare</td></tr>
+          <tr><td style="color:rgba(10,10,15,.5)">Standard</td><td>BT SIG</td><td>BT SIG</td><td>LoRa Alliance</td><td>3GPP Rel.13</td><td>Sigfox</td><td>3GPP Rel.15+</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Guida -->
+  <div class="box">
+    <div class="box-title">Guida rapida alla scelta</div>
+    <div class="grid g2">
+      <div class="callout c-blue" style="margin:0">
+        <strong>→ Scegli BLE</strong>
+        Indoor · corto raggio · wearable · beacon · real-time · smartphone come hub · localizzazione RTLS
+      </div>
+      <div class="callout c-teal" style="margin:0">
+        <strong>→ Scegli LoRaWAN</strong>
+        Lungo raggio · no SIM · dati piccoli periodici · agricoltura · smart city · utility · outdoor
+      </div>
+      <div class="callout c-orange" style="margin:0">
+        <strong>→ Scegli NB-IoT</strong>
+        Deep indoor · infrastruttura cellulare · mobilità · sicurezza enterprise · contatori gas/acqua
+      </div>
+      <div class="callout c-red" style="margin:0">
+        <strong>→ Scegli 5G URLLC</strong>
+        Latenza critica · veicoli autonomi · industria 4.0 · telemedicina · alta densità dispositivi
+      </div>
+    </div>
+  </div>
+</section>
 <!-- Note: Le altre sezioni (BLE, LoRa, NB-IoT, 5G, Confronto) seguirebbero lo stesso schema con spiegazioni dettagliate. 
      Per brevità, le salto in questa risposta ma il pattern è identico: 
      - Box visivo originale
