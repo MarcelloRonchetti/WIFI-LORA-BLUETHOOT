@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reti Wireless per IoT — Appunti</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2128;
+    --border: rgba(255,255,255,0.08);
+    --text: #e6edf3;
+    --muted: #7d8590;
+    --blue: #58a6ff;
+    --blue-dim: rgba(88,166,255,0.12);
+    --teal: #39d353;
+    --teal-dim: rgba(57,211,83,0.1);
+    --purple: #bc8cff;
+    --purple-dim: rgba(188,140,255,0.12);
+    --orange: #f0883e;
+    --orange-dim: rgba(240,136,62,0.12);
+    --red: #ff7b72;
+    --red-dim: rgba(255,123,114,0.1);
+    --yellow: #e3b341;
+    --yellow-dim: rgba(227,179,65,0.1);
+    --radius: 10px;
+    --font: 'Space Grotesk', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 2rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(88,166,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 30%;
+    width: 250px; height: 200px;
+    background: radial-gradient(circle, rgba(188,140,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-content { max-width: 960px; margin: 0 auto; }
+  .subject-tag {
+    display: inline-block;
+    background: var(--blue-dim);
+    color: var(--blue);
+    border: 1px solid rgba(88,166,255,0.3);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    margin-bottom: 1rem;
+  }
+  .header h1 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #e6edf3 0%, #58a6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-meta {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 1.5rem;
+  }
+  .header-meta span { color: var(--blue); }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-top: 1.5rem;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active {
+    color: var(--text);
+    border-bottom-color: var(--blue);
+  }
+  .tab-btn .dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* CONTENT */
+  .content { max-width: 960px; margin: 0 auto; padding: 2rem; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* SECTION HEADER */
+  .section-hero {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    position: relative;
+    overflow: hidden;
+  }
+  .section-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .section-hero.blue::before { background: linear-gradient(90deg, var(--blue), transparent); }
+  .section-hero.purple::before { background: linear-gradient(90deg, var(--purple), transparent); }
+  .section-hero.teal::before { background: linear-gradient(90deg, var(--teal), transparent); }
+  .section-hero.orange::before { background: linear-gradient(90deg, var(--orange), transparent); }
+  .section-hero.red::before { background: linear-gradient(90deg, var(--red), transparent); }
+  .section-icon {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .section-hero h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
+  .section-hero p { color: var(--muted); font-size: 14px; }
+
+  /* CARDS GRID */
+  .grid { display: grid; gap: 1rem; margin-bottom: 1.5rem; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+  /* CARD */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: rgba(255,255,255,0.15); }
+  .card-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+  .card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* DIAGRAM CONTAINERS */
+  .diagram-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .diagram-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .diagram-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* PICONET VISUAL */
+  .piconet-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    padding: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+  .piconet {
+    position: relative;
+    width: 180px; height: 180px;
+    flex-shrink: 0;
+  }
+  .master-node {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 52px; height: 52px;
+    background: var(--blue-dim);
+    border: 2px solid var(--blue);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--blue);
+    z-index: 2;
+    letter-spacing: 0.5px;
+  }
+  .slave-node {
+    position: absolute;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .slave-active { background: rgba(57,211,83,0.12); border: 1.5px solid var(--teal); color: var(--teal); }
+  .slave-park { background: rgba(227,179,65,0.12); border: 1.5px solid var(--yellow); color: var(--yellow); }
+  .connector {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 1px;
+    transform-origin: 0 0;
+    background: rgba(88,166,255,0.3);
+  }
+  .piconet-label {
+    text-align: center;
+    margin-top: 0.75rem;
+  }
+  .piconet-label strong { font-size: 13px; color: var(--text); display: block; }
+  .piconet-label span { font-size: 11px; color: var(--muted); }
+  .legend-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid; }
+
+  /* STACK VISUAL */
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .stack-layer {
+    padding: 10px 16px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid;
+    transition: transform 0.15s;
+    cursor: default;
+  }
+  .stack-layer:hover { transform: translateX(4px); }
+  .stack-layer .tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .layer-app { background: rgba(188,140,255,0.08); border-color: rgba(188,140,255,0.25); color: var(--purple); }
+  .layer-high { background: rgba(88,166,255,0.08); border-color: rgba(88,166,255,0.25); color: var(--blue); }
+  .layer-link { background: rgba(57,211,83,0.08); border-color: rgba(57,211,83,0.25); color: var(--teal); }
+  .layer-base { background: rgba(240,136,62,0.08); border-color: rgba(240,136,62,0.25); color: var(--orange); }
+  .layer-radio { background: rgba(255,123,114,0.08); border-color: rgba(255,123,114,0.25); color: var(--red); }
+
+  /* STAT CARDS */
+  .stat-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    text-align: center;
+  }
+  .stat-card .value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    font-family: var(--mono);
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .stat-card .label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  /* COMPARISON TABLE */
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .compare-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text);
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* FHSS VISUAL */
+  .fhss-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 1rem 0;
+  }
+  .freq-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .freq-label { width: 50px; text-align: right; font-family: var(--mono); }
+  .freq-slots { display: flex; gap: 3px; flex: 1; }
+  .slot {
+    height: 16px;
+    border-radius: 3px;
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .slot.active-bt { background: var(--blue-dim); border-color: rgba(88,166,255,0.4); }
+  .slot.active-other { background: rgba(240,136,62,0.15); border-color: rgba(240,136,62,0.3); }
+
+  /* NETWORK ARCH DIAGRAM */
+  .arch-diagram { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; padding: 1rem 0; }
+  .arch-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 0 1rem;
+  }
+  .arch-icon {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    border: 1px solid;
+  }
+  .arch-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 0.25rem;
+  }
+  .arch-arrow svg { width: 32px; height: 16px; }
+  .arch-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 0.3px;
+  }
+  .arch-sub {
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    max-width: 70px;
+    line-height: 1.4;
+  }
+
+  /* SPREADING FACTOR TABLE */
+  .sf-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+  .sf-label { width: 32px; font-family: var(--mono); font-weight: 600; color: var(--blue); }
+  .sf-track { flex: 1; height: 14px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+  .sf-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+  .sf-meta { width: 120px; color: var(--muted); }
+
+  /* CLASS CARDS */
+  .class-row { display: flex; gap: 1px; border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem; }
+  .class-col { flex: 1; padding: 1rem; border: 1px solid var(--border); }
+  .class-col:first-child { border-radius: 8px 0 0 8px; }
+  .class-col:last-child { border-radius: 0 8px 8px 0; }
+
+  /* SECTION DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.5rem 0;
+  }
+
+  /* CALLOUT */
+  .callout {
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    border-left: 3px solid;
+    margin-bottom: 1.5rem;
+    font-size: 13px;
+  }
+  .callout-blue { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
+  .callout-teal { background: var(--teal-dim); border-color: var(--teal); color: var(--teal); }
+  .callout-orange { background: var(--orange-dim); border-color: var(--orange); color: var(--orange); }
+  .callout strong { display: block; margin-bottom: 4px; }
+  .callout p { color: var(--muted); margin: 0; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .section.active { animation: fadeSlide 0.25s ease; }
+
+  @keyframes hopAnim {
+    0%,100% { background: var(--bg3); }
+    50% { background: var(--blue-dim); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .content { padding: 1rem; }
+    .class-row { flex-direction: column; }
+    .arch-diagram { gap: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-content">
+    <div class="subject-tag">📡 TPSIT — 5F/5M 2025/26</div>
+    <h1>Reti Wireless per IoT</h1>
+    <p class="header-meta">Bluetooth · BLE · LoRaWAN · NB-IoT · 5G &nbsp;|&nbsp; <span>Appunti interattivi</span></p>
+    <nav class="tabs" role="tablist">
+      <button class="tab-btn active" onclick="show('bluetooth')" role="tab"><span class="dot" style="background:#58a6ff"></span>Bluetooth</button>
+      <button class="tab-btn" onclick="show('ble')" role="tab"><span class="dot" style="background:#bc8cff"></span>BLE</button>
+      <button class="tab-btn" onclick="show('lora')" role="tab"><span class="dot" style="background:#39d353"></span>LoRa / LoRaWAN</button>
+      <button class="tab-btn" onclick="show('nbiot')" role="tab"><span class="dot" style="background:#f0883e"></span>NB-IoT</button>
+      <button class="tab-btn" onclick="show('5g')" role="tab"><span class="dot" style="background:#ff7b72"></span>5G &amp; IoT</button>
+      <button class="tab-btn" onclick="show('compare')" role="tab"><span class="dot" style="background:#e3b341"></span>Confronto</button>
+    </nav>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ======================== BLUETOOTH ======================== -->
+<section class="section active" id="sec-bluetooth">
+
+  <div class="section-hero blue">
+    <div class="section-icon" style="background:rgba(88,166,255,0.1);border:1px solid rgba(88,166,255,0.3)">📶</div>
+    <div>
+      <h2 style="color:var(--blue)">Bluetooth Classic</h2>
+      <p>Standard wireless 2.4 GHz per comunicazione a corto raggio. Architettura Master/Slave con reti piconet e scatternet.</p>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid grid-3" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="value" style="color:var(--blue)">79</div><div class="label">Canali da 1 MHz (FHSS)</div></div>
+    <div class="stat-card"><div class="value" style="color:var(--blue)">7</div><div class="label">Slave attivi max per piconet</div></div>
+    <div class="stat-card"><div class="value" style="color:var(--blue)">1600</div><div class="label">Frequency hops / sec</div></div>
+  </div>
+
+  <!-- PICONET & SCATTERNET -->
+  <div class="diagram-box">
+    <div class="diagram-title">Architettura della rete</div>
+    <div class="piconet-visual" id="piconetVisual">
+
+      <!-- PICONET 1 -->
+      <div>
+        <div class="piconet" id="p1">
+          <!-- Connectors drawn via JS -->
+        </div>
+        <div class="piconet-label">
+          <strong>Piconet</strong>
+          <span>1 master + fino a 7 slave attivi</span>
+        </div>
+      </div>
+
+      <!-- SCATTERNET arrow -->
+      <div style="font-size:24px;color:var(--muted)">→</div>
+
+      <!-- SCATTERNET -->
+      <div>
+        <div style="display:flex;gap:12px;align-items:center;justify-content:center">
+          <div class="piconet" id="p2" style="width:130px;height:130px"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(227,179,65,0.2);border:1.5px solid var(--yellow);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--yellow)">GW</div>
+            <div style="width:1px;height:20px;background:rgba(255,255,255,0.15)"></div>
+          </div>
+          <div class="piconet" id="p3" style="width:130px;height:130px"></div>
+        </div>
+        <div class="piconet-label">
+          <strong>Scatternet</strong>
+          <span>Più piconet collegate da gateway device</span>
+        </div>
+      </div>
+    </div>
+    <div class="legend-row" style="justify-content:center">
+      <div class="legend-item"><div class="legend-dot" style="border-color:var(--blue);background:var(--blue-dim)"></div>Master</div>
+      <div class="legend-item"><div class="legend-dot" style="border-color:var(--teal);background:var(--teal-dim)"></div>Slave attivo</div>
+      <div class="legend-item"><div class="legend-dot" style="border-color:var(--yellow);background:var(--yellow-dim)"></div>Parked slave / Gateway</div>
+    </div>
+  </div>
+
+  <!-- MODALITÀ SLAVE -->
+  <div class="diagram-box">
+    <div class="diagram-title">Modalità degli slave</div>
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="card-label" style="color:var(--teal)">Attivo</div>
+        <h3>Active Mode</h3>
+        <p>Partecipa alla comunicazione. Trasmette e riceve. Max <strong style="color:var(--text)">7 slave</strong> contemporanei per piconet (indirizzo logico 3 bit → 8 combinazioni).</p>
+      </div>
+      <div class="card">
+        <div class="card-label" style="color:var(--muted)">Inattivo</div>
+        <h3>Standby</h3>
+        <p>Non connesso alla piconet. Consumo minimo. Nessun limite al numero di dispositivi in standby.</p>
+      </div>
+      <div class="card">
+        <div class="card-label" style="color:var(--yellow)">Intermedio</div>
+        <h3>Parked Slave</h3>
+        <p>Sincronizzato col master ma non trasmette. Monitora solo <strong style="color:var(--text)">32 canali</strong> (su 79) per risparmiare energia. Permette di superare il limite dei 7 slave.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FHSS -->
+  <div class="diagram-box">
+    <div class="diagram-title">FHSS — Frequency Hopping Spread Spectrum</div>
+    <div class="callout callout-blue">
+      <strong>Principio chiave</strong>
+      <p>Il trasmettitore e il ricevitore cambiano frequenza in modo sincronizzato secondo una sequenza pseudocasuale unica per ogni piconet. Se un canale è disturbato, subito si salta al successivo.</p>
+    </div>
+    <div class="fhss-visual" id="fhssVisual">
+      <!-- Built by JS -->
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:0.5rem;text-align:center">
+      Ogni time slot (625 µs) corrisponde a una frequenza della sequenza. <span style="color:var(--blue)">Blu = Bluetooth</span> · <span style="color:var(--orange)">Arancio = altra piconet</span>
+    </div>
+  </div>
+
+  <!-- STACK -->
+  <div class="diagram-box">
+    <div class="diagram-title">Stack protocollare Bluetooth</div>
+    <div class="stack">
+      <div class="stack-layer layer-app"><span>Applicazioni / Profili</span><span class="tag">Software</span></div>
+      <div class="stack-layer layer-high"><span>L2CAP · RFCOMM · TCS BIN · SDP</span><span class="tag">Alto</span></div>
+      <div class="stack-layer layer-link"><span>Link Manager (LMP) — Auth, Crittografia 128 bit</span><span class="tag">Collegamento</span></div>
+      <div class="stack-layer layer-base"><span>Baseband — Pacchetti, Timing, Indirizzi, Slot</span><span class="tag">Logico</span></div>
+      <div class="stack-layer layer-radio"><span>Radio — Frequenze, Modulazione (GFSK/π/4-DQPSK/8DPSK), Potenza</span><span class="tag">Hardware</span></div>
+    </div>
+    <div class="legend-row" style="justify-content:center;margin-top:1rem">
+      <div class="legend-item"><div style="width:12px;height:12px;border-radius:2px;background:rgba(188,140,255,0.2);border:1px solid rgba(188,140,255,0.4)"></div>Software</div>
+      <div class="legend-item"><div style="width:12px;height:12px;border-radius:2px;background:rgba(255,123,114,0.2);border:1px solid rgba(255,123,114,0.4)"></div>Hardware (analogico/digitale)</div>
+    </div>
+  </div>
+
+  <!-- CLASSI DI POTENZA -->
+  <div class="diagram-box">
+    <div class="diagram-title">Classi di potenza</div>
+    <div class="class-row">
+      <div class="class-col" style="background:rgba(88,166,255,0.06)">
+        <div class="badge" style="background:var(--blue-dim);color:var(--blue);margin-bottom:8px">Classe 1</div>
+        <div style="font-size:1.4rem;font-weight:700;color:var(--blue);margin-bottom:4px">100 mW</div>
+        <div style="font-size:12px;color:var(--muted)">20 dBm · fino a 100m indoor / 200m outdoor</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">📻 PC, notebook</div>
+      </div>
+      <div class="class-col" style="background:rgba(57,211,83,0.06)">
+        <div class="badge" style="background:var(--teal-dim);color:var(--teal);margin-bottom:8px">Classe 2</div>
+        <div style="font-size:1.4rem;font-weight:700;color:var(--teal);margin-bottom:4px">2.5 mW</div>
+        <div style="font-size:12px;color:var(--muted)">4 dBm · fino a 10m indoor / 50m outdoor</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">🎧 La più comune — adattatori, periferiche</div>
+      </div>
+      <div class="class-col" style="background:rgba(227,179,65,0.06)">
+        <div class="badge" style="background:var(--yellow-dim);color:var(--yellow);margin-bottom:8px">Classe 3</div>
+        <div style="font-size:1.4rem;font-weight:700;color:var(--yellow);margin-bottom:4px">1 mW</div>
+        <div style="font-size:12px;color:var(--muted)">0 dBm · ~1m indoor / 10m outdoor</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">⌚ Dispositivi mobili ultra-low-power</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ======================== BLE ======================== -->
+<section class="section" id="sec-ble">
+
+  <div class="section-hero purple">
+    <div class="section-icon" style="background:rgba(188,140,255,0.1);border:1px solid rgba(188,140,255,0.3)">⚡</div>
+    <div>
+      <h2 style="color:var(--purple)">Bluetooth Low Energy (BLE)</h2>
+      <p>Introdotto con Bluetooth 4.0 (2010) da Nokia come Wibree. Pensato per IoT: consumi fino a 100× inferiori al Classic.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-3" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="value" style="color:var(--purple)">~300</div><div class="label">Kbps velocità trasmissione</div></div>
+    <div class="stat-card"><div class="value" style="color:var(--purple)">20B</div><div class="label">Dimensione pacchetto tipico</div></div>
+    <div class="stat-card"><div class="value" style="color:var(--purple)">100m</div><div class="label">Raggio di copertura max</div></div>
+  </div>
+
+  <!-- CICLO DI VITA -->
+  <div class="diagram-box">
+    <div class="diagram-title">Ciclo di vita di una connessione BLE</div>
+    <div style="display:flex;gap:0;align-items:stretch;flex-wrap:wrap;border-radius:8px;overflow:hidden">
+      <div style="flex:1;min-width:120px;background:rgba(188,140,255,0.07);border:1px solid rgba(188,140,255,0.2);padding:1rem;border-radius:0">
+        <div style="font-size:20px;margin-bottom:8px">📢</div>
+        <div style="font-size:12px;font-weight:600;color:var(--purple);margin-bottom:4px">1. Advertising</div>
+        <div style="font-size:12px;color:var(--muted)">Il dispositivo trasmette periodicamente segnali di presenza. Bassissimo consumo.</div>
+      </div>
+      <div style="width:1px;background:rgba(188,140,255,0.2)"></div>
+      <div style="flex:1;min-width:120px;background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.2);padding:1rem">
+        <div style="font-size:20px;margin-bottom:8px">🔗</div>
+        <div style="font-size:12px;font-weight:600;color:var(--blue);margin-bottom:4px">2. Connessione</div>
+        <div style="font-size:12px;color:var(--muted)">Il ricevitore risponde all'advertising e si stabilisce il canale.</div>
+      </div>
+      <div style="width:1px;background:rgba(88,166,255,0.2)"></div>
+      <div style="flex:1;min-width:120px;background:rgba(57,211,83,0.07);border:1px solid rgba(57,211,83,0.2);padding:1rem">
+        <div style="font-size:20px;margin-bottom:8px">📊</div>
+        <div style="font-size:12px;font-weight:600;color:var(--teal);margin-bottom:4px">3. Scambio dati</div>
+        <div style="font-size:12px;color:var(--muted)">Comunicazione bidirezionale a burst brevi alternati a periodi di inattività.</div>
+      </div>
+      <div style="width:1px;background:rgba(57,211,83,0.2)"></div>
+      <div style="flex:1;min-width:120px;background:rgba(240,136,62,0.07);border:1px solid rgba(240,136,62,0.2);padding:1rem;border-radius:0">
+        <div style="font-size:20px;margin-bottom:8px">💤</div>
+        <div style="font-size:12px;font-weight:600;color:var(--orange);margin-bottom:4px">4. Disconnessione</div>
+        <div style="font-size:12px;color:var(--muted)">Connessione chiusa. I dispositivi tornano in standby per risparmiare energia.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHY MODES -->
+  <div class="diagram-box">
+    <div class="diagram-title">Livelli fisici (PHY) — Modulazione GFSK</div>
+    <div class="grid grid-3">
+      <div class="card" style="border-color:rgba(188,140,255,0.3)">
+        <div class="badge" style="background:rgba(188,140,255,0.1);color:var(--purple);margin-bottom:8px">Obbligatorio</div>
+        <div style="font-family:var(--mono);font-size:13px;color:var(--purple);margin-bottom:6px">LE 1M PHY</div>
+        <p>1 Msym/s · deviazione ±185 kHz · bilanciato tra velocità, portata e consumo.</p>
+      </div>
+      <div class="card" style="border-color:rgba(88,166,255,0.3)">
+        <div class="badge" style="background:rgba(88,166,255,0.1);color:var(--blue);margin-bottom:8px">Opzionale</div>
+        <div style="font-family:var(--mono);font-size:13px;color:var(--blue);margin-bottom:6px">LE 2M PHY</div>
+        <p>2 Msym/s · deviazione ±370 kHz · metà del tempo in aria = meno consumo ad alta velocità.</p>
+      </div>
+      <div class="card" style="border-color:rgba(57,211,83,0.3)">
+        <div class="badge" style="background:rgba(57,211,83,0.1);color:var(--teal);margin-bottom:8px">Opzionale</div>
+        <div style="font-family:var(--mono);font-size:13px;color:var(--teal);margin-bottom:6px">LE Coded PHY</div>
+        <p>1 Msym/s + <strong style="color:var(--text)">FEC</strong> (Forward Error Correction). Velocità ridotta ma portata maggiore e maggiore robustezza.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STACK BLE -->
+  <div class="diagram-box">
+    <div class="diagram-title">Stack BLE — livelli principali</div>
+    <div class="grid grid-2">
+      <div class="stack">
+        <div class="stack-layer layer-app"><span>Applicazione utente</span><span class="tag">Top</span></div>
+        <div class="stack-layer layer-app"><span>GAP — Gestione connessioni e ruoli</span><span class="tag">App</span></div>
+        <div class="stack-layer layer-high"><span>GATT — Struttura servizi e caratteristiche</span><span class="tag">Alto</span></div>
+        <div class="stack-layer layer-high"><span>ATT — Protocollo client/server attributi</span><span class="tag">Alto</span></div>
+        <div class="stack-layer layer-link"><span>Link Layer (LL) — Pacchetti, timing radio</span><span class="tag">Basso</span></div>
+        <div class="stack-layer layer-radio"><span>Physical Layer — GFSK, canali 2 MHz</span><span class="tag">HW</span></div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:0.75rem">
+          <div class="card-label" style="color:var(--purple)">GAP</div>
+          <h3>Generic Access Profile</h3>
+          <p>Definisce i <strong style="color:var(--text)">ruoli</strong>: <em>Centrale</em> (cerca e connette) e <em>Periferica</em> (attende). Gestisce visibilità e discovery.</p>
+        </div>
+        <div class="card" style="margin-bottom:0.75rem">
+          <div class="card-label" style="color:var(--blue)">GATT + ATT</div>
+          <h3>Dati strutturati</h3>
+          <p>Dati organizzati in <strong style="color:var(--text)">Servizi</strong> (funzioni generali) e <strong style="color:var(--text)">Caratteristiche</strong> (valori specifici). Ogni attributo ha UUID, valore e permessi.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICAZIONI -->
+  <div class="grid grid-3">
+    <div class="card"><div style="font-size:1.5rem;margin-bottom:8px">⌚</div><div class="card-label" style="color:var(--purple)">Wearable</div><p>Fitness tracker e smartwatch sincronizzano dati in real-time con bassissimo impatto sulla batteria.</p></div>
+    <div class="card"><div style="font-size:1.5rem;margin-bottom:8px">🏠</div><div class="card-label" style="color:var(--purple)">Domotica</div><p>Luci, serrature, termostati — sempre attivi ma a consumo ridottissimo.</p></div>
+    <div class="card"><div style="font-size:1.5rem;margin-bottom:8px">🏥</div><div class="card-label" style="color:var(--purple)">Sanità</div><p>Monitoraggio remoto: frequenza cardiaca, SpO2 e altri parametri trasmessi ai sistemi sanitari.</p></div>
+    <div class="card"><div style="font-size:1.5rem;margin-bottom:8px">🏪</div><div class="card-label" style="color:var(--purple)">Retail</div><p>Beacon BLE per indoor positioning e notifiche promozionali personalizzate.</p></div>
+    <div class="card"><div style="font-size:1.5rem;margin-bottom:8px">🏭</div><div class="card-label" style="color:var(--purple)">Industria</div><p>Sensori per manutenzione predittiva: rilevano anomalie prima che causino guasti.</p></div>
+    <div class="card"><div style="font-size:1.5rem;margin-bottom:8px">📍</div><div class="card-label" style="color:var(--purple)">RTLS</div><p>Real-Time Locating Systems con RSSI, AoA (Angle of Arrival) o AoD (Angle of Departure).</p></div>
+  </div>
+
+</section>
+
+<!-- ======================== LORA ======================== -->
+<section class="section" id="sec-lora">
+
+  <div class="section-hero teal">
+    <div class="section-icon" style="background:rgba(57,211,83,0.1);border:1px solid rgba(57,211,83,0.3)">🌐</div>
+    <div>
+      <h2 style="color:var(--teal)">LoRa / LoRaWAN</h2>
+      <p>LPWAN a lungo raggio per IoT rurale e urbano. LoRa = livello fisico (CSS) · LoRaWAN = protocollo di rete.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-3" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="value" style="color:var(--teal)">15 km</div><div class="label">Range in campo aperto</div></div>
+    <div class="stat-card"><div class="value" style="color:var(--teal)">154 dB</div><div class="label">Link budget massimo</div></div>
+    <div class="stat-card"><div class="value" style="color:var(--teal)">105 mo</div><div class="label">Durata batteria 2000 mAh</div></div>
+  </div>
+
+  <!-- ARCHITETTURA RETE -->
+  <div class="diagram-box">
+    <div class="diagram-title">Architettura LoRaWAN — Star of Stars</div>
+    <div class="arch-diagram">
+      <div class="arch-node">
+        <div class="arch-icon" style="background:rgba(57,211,83,0.1);border-color:rgba(57,211,83,0.3);color:var(--teal)">📡</div>
+        <div class="arch-label" style="color:var(--teal)">End Devices</div>
+        <div class="arch-sub">Sensori LoRa</div>
+      </div>
+      <div class="arch-arrow">
+        <svg viewBox="0 0 32 16"><line x1="2" y1="8" x2="28" y2="8" stroke="#39d353" stroke-width="1.5" stroke-dasharray="3,2"/><polygon points="25,5 30,8 25,11" fill="#39d353"/></svg>
+        <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:2px">LoRa RF</div>
+      </div>
+      <div class="arch-node">
+        <div class="arch-icon" style="background:rgba(88,166,255,0.1);border-color:rgba(88,166,255,0.3);color:var(--blue)">🔀</div>
+        <div class="arch-label" style="color:var(--blue)">Gateway</div>
+        <div class="arch-sub">Concentratore trasparente</div>
+      </div>
+      <div class="arch-arrow">
+        <svg viewBox="0 0 32 16"><line x1="2" y1="8" x2="28" y2="8" stroke="#58a6ff" stroke-width="1.5"/><polygon points="25,5 30,8 25,11" fill="#58a6ff"/></svg>
+        <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:2px">IP/4G</div>
+      </div>
+      <div class="arch-node">
+        <div class="arch-icon" style="background:rgba(227,179,65,0.1);border-color:rgba(227,179,65,0.3);color:var(--yellow)">☁️</div>
+        <div class="arch-label" style="color:var(--yellow)">Network Server</div>
+        <div class="arch-sub">Dedup, sicurezza, routing</div>
+      </div>
+      <div class="arch-arrow">
+        <svg viewBox="0 0 32 16"><line x1="2" y1="8" x2="28" y2="8" stroke="#e3b341" stroke-width="1.5"/><polygon points="25,5 30,8 25,11" fill="#e3b341"/></svg>
+        <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:2px">TCP/IP</div>
+      </div>
+      <div class="arch-node">
+        <div class="arch-icon" style="background:rgba(188,140,255,0.1);border-color:rgba(188,140,255,0.3);color:var(--purple)">🖥️</div>
+        <div class="arch-label" style="color:var(--purple)">App Server</div>
+        <div class="arch-sub">Dati utente finale</div>
+      </div>
+    </div>
+    <div class="callout callout-teal" style="margin-top:1rem;margin-bottom:0">
+      <strong>Come funziona: uplink</strong>
+      <p>L'end node invia il pacchetto a <em>tutti</em> i gateway vicini. Il network server raccoglie i duplicati, sceglie il gateway con ricezione migliore, e instrada al corretto application server.</p>
+    </div>
+  </div>
+
+  <!-- CSS MODULATION & SPREADING FACTOR -->
+  <div class="diagram-box">
+    <div class="diagram-title">Modulazione CSS e Spreading Factor</div>
+    <div class="grid grid-2">
+      <div>
+        <div class="card" style="margin-bottom:0.75rem">
+          <div class="card-label" style="color:var(--teal)">Chirp Spread Spectrum</div>
+          <h3>Come funziona CSS</h3>
+          <p>Un <strong style="color:var(--text)">chirp</strong> è un segnale sinusoidale la cui frequenza varia linearmente nel tempo. CSS incorpora i dati nella <em>frequenza di partenza</em> del chirp — brevettato come modulazione LoRa.</p>
+          <p style="margin-top:8px">Vantaggi: basso consumo · alta immunità alle interferenze · segnale trasmissibile sotto la soglia del rumore.</p>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px;font-weight:600">Spreading Factor a 125 kHz</div>
+        <div id="sfBars"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEVICE CLASSES -->
+  <div class="diagram-box">
+    <div class="diagram-title">Classi di dispositivi LoRaWAN</div>
+    <div class="class-row">
+      <div class="class-col" style="background:rgba(255,123,114,0.06)">
+        <div class="badge" style="background:rgba(255,123,114,0.15);color:var(--red);margin-bottom:8px">Classe A</div>
+        <div style="font-weight:700;margin-bottom:4px;color:var(--text)">Battery</div>
+        <div style="font-size:12px;color:var(--muted)">Uplink + 2 finestre downlink brevi. Il più efficiente dal punto di vista energetico.</div>
+      </div>
+      <div class="class-col" style="background:rgba(57,211,83,0.06)">
+        <div class="badge" style="background:rgba(57,211,83,0.15);color:var(--teal);margin-bottom:8px">Classe B</div>
+        <div style="font-weight:700;margin-bottom:4px;color:var(--text)">Beacon</div>
+        <div style="font-size:12px;color:var(--muted)">Come A + finestre di ricezione aggiuntive schedulate tramite beacon del gateway.</div>
+      </div>
+      <div class="class-col" style="background:rgba(88,166,255,0.06)">
+        <div class="badge" style="background:rgba(88,166,255,0.15);color:var(--blue);margin-bottom:8px">Classe C</div>
+        <div style="font-weight:700;margin-bottom:4px;color:var(--text)">Continuous</div>
+        <div style="font-size:12px;color:var(--muted)">Ascolto continuo. Latenza minima in downlink. Maggiore consumo → spesso alimentati a rete.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADR & DUTY CYCLE -->
+  <div class="grid grid-2">
+    <div class="diagram-box">
+      <div class="diagram-title">ADR — Adaptive Data Rate</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Il network server adatta dinamicamente SF, BW e potenza in base alla qualità del segnale. Al primo collegamento → SF12 (max portata). Man mano → SF scende per aumentare la velocità e ridurre il consumo.</p>
+      <div class="callout callout-orange" style="margin-bottom:0">
+        <strong>Quando usarlo</strong>
+        <p>Solo in condizioni RF stabili (nodi fermi). I nodi mobili devono disabilitarlo o abilitarlo solo quando stazionari.</p>
+      </div>
+    </div>
+    <div class="diagram-box">
+      <div class="diagram-title">Duty Cycle — banda 868 MHz</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">La banda ISM 868 MHz (865–870 MHz, 5 sottobande) impone due restrizioni:</p>
+      <div class="card" style="margin-bottom:0.75rem">
+        <div class="card-label" style="color:var(--orange)">Potenza TX</div>
+        <p>Max <strong style="color:var(--text)">25 mW (14 dBm)</strong> comunemente usato con LPWAN.</p>
+      </div>
+      <div class="card">
+        <div class="card-label" style="color:var(--orange)">Duty Cycle (ToA)</div>
+        <p>1% = max <strong style="color:var(--text)">36 sec/ora</strong> di trasmissione. Es: se ToA = 530 ms, devi aspettare 52 sec prima della trasmissione successiva.</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ======================== NB-IOT ======================== -->
+<section class="section" id="sec-nbiot">
+
+  <div class="section-hero orange">
+    <div class="section-icon" style="background:rgba(240,136,62,0.1);border:1px solid rgba(240,136,62,0.3)">📱</div>
+    <div>
+      <h2 style="color:var(--orange)">NB-IoT — Narrowband IoT</h2>
+      <p>LPWAN cellulare su banda licenziata 800 MHz. Opera su infrastruttura LTE esistente (2G/3G/4G). Standardizzato da 3GPP Release 13.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-3" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="value" style="color:var(--orange)">~20</div><div class="label">Kbps data rate upload</div></div>
+    <div class="stat-card"><div class="value" style="color:var(--orange)">50K</div><div class="label">Dispositivi/cella (180 kHz)</div></div>
+    <div class="stat-card"><div class="value" style="color:var(--orange)">10+</div><div class="label">Anni batteria attesa</div></div>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="diagram-box">
+      <div class="diagram-title">Caratteristiche tecniche</div>
+      <table class="compare-table">
+        <tr><td style="color:var(--muted)">Banda</td><td><strong>800 MHz</strong> (licenziata)</td></tr>
+        <tr><td style="color:var(--muted)">Modulazione</td><td>QPSK (Quadrature Phase Shift Keying)</td></tr>
+        <tr><td style="color:var(--muted)">Accesso</td><td>FDMA uplink · OFDMA downlink</td></tr>
+        <tr><td style="color:var(--muted)">Larghezza canale</td><td>180 kHz</td></tr>
+        <tr><td style="color:var(--muted)">SIM Card</td><td>Sì (M2M)</td></tr>
+        <tr><td style="color:var(--muted)">Copertura</td><td>Deep indoor — raggiunge cantine e tombini</td></tr>
+      </table>
+    </div>
+    <div class="diagram-box">
+      <div class="diagram-title">Architettura NB-IoT</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card">
+          <div class="card-label" style="color:var(--orange)">Host</div>
+          <p>Microprocessore/microcontroller che ospita le applicazioni e comunica con modulo NB-IoT e sensori.</p>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:var(--orange)">Rete cellulare</div>
+          <p>Base station → NB-IoT core network → M2M platform → Server. Elabora tutti i dati da nodo ad applicazione.</p>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:var(--orange)">Applicazione</div>
+          <p>End application dove il nodo è controllato e i dati in ingresso sono monitorati.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIM CARD IoT -->
+  <div class="diagram-box">
+    <div class="diagram-title">SIM Card IoT — M2M</div>
+    <div class="grid grid-2">
+      <div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">La rete M2M collega dispositivi come sensori fitness, automobili, impianti di climatizzazione, telecamere, container di trasporto.</p>
+        <div class="callout callout-orange" style="margin-bottom:0.75rem">
+          <strong>IP fisso pubblico</strong>
+          <p>Permette accesso remoto al dispositivo senza aspettare che invii i dati. Maggiore controllo e sicurezza.</p>
+        </div>
+        <div class="callout callout-blue" style="margin-bottom:0">
+          <strong>Multi-operatore</strong>
+          <p>La SIM si connette automaticamente all'operatore col segnale migliore. Failover automatico.</p>
+        </div>
+      </div>
+      <div class="grid" style="grid-template-columns:1fr 1fr">
+        <div class="card">
+          <div class="card-label" style="color:var(--muted)">Standard</div>
+          <h3 style="font-size:0.9rem">SIM Standard</h3>
+          <p>-25°C a +85°C · condizioni ambientali normali</p>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:var(--orange)">Industriale</div>
+          <h3 style="font-size:0.9rem">SIM Industriale</h3>
+          <p>-40°C a +105°C · ambienti difficili, vibrazioni</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIGFOX BONUS -->
+  <div class="diagram-box">
+    <div class="diagram-title">Sigfox — tecnologia correlata UNB</div>
+    <div class="callout callout-orange">
+      <strong>Ultra Narrow Band (UNB)</strong>
+      <p>Ogni nodo occupa una banda di poche centinaia di Hz. Più stretta la banda → più basso il rumore (~-154 dBm per 100 Hz). Range fino a 50 km dal gateway. Limite: max 1 messaggio ogni 10 min, 12 bytes payload.</p>
+    </div>
+    <div class="grid grid-3">
+      <div class="card"><div class="card-label" style="color:var(--orange)">Max messaggi/giorno</div><p style="font-size:1.2rem;font-weight:700;color:var(--text)">140 UL</p><p>messaggi uplink</p></div>
+      <div class="card"><div class="card-label" style="color:var(--orange)">Range</div><p style="font-size:1.2rem;font-weight:700;color:var(--text)">50 km</p><p>dal gateway</p></div>
+      <div class="card"><div class="card-label" style="color:var(--orange)">Payload max</div><p style="font-size:1.2rem;font-weight:700;color:var(--text)">12 B</p><p>esclusi header</p></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ======================== 5G ======================== -->
+<section class="section" id="sec-5g">
+
+  <div class="section-hero red">
+    <div class="section-icon" style="background:rgba(255,123,114,0.1);border:1px solid rgba(255,123,114,0.3)">🚀</div>
+    <div>
+      <h2 style="color:var(--red)">5G per IoT</h2>
+      <p>Rete convergente eterogenea su licenza + non-licenza. Architetture software-defined. Densità: 1 milione di dispositivi/km² (10× il 4G).</p>
+    </div>
+  </div>
+
+  <!-- BANDE FREQUENZA -->
+  <div class="diagram-box">
+    <div class="diagram-title">Bande di frequenza del 5G</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:80px;font-size:12px;color:var(--muted);text-align:right">700 MHz</div>
+        <div style="flex:0.3;height:32px;background:rgba(57,211,83,0.15);border:1px solid rgba(57,211,83,0.3);border-radius:6px;display:flex;align-items:center;padding:0 10px">
+          <span style="font-size:11px;font-weight:600;color:var(--teal)">Banda bassa</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted)">Lungo range · simile/superiore a 4G · copre aree remote</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:80px;font-size:12px;color:var(--muted);text-align:right">3.7 GHz</div>
+        <div style="flex:0.6;height:32px;background:rgba(88,166,255,0.15);border:1px solid rgba(88,166,255,0.3);border-radius:6px;display:flex;align-items:center;padding:0 10px">
+          <span style="font-size:11px;font-weight:600;color:var(--blue)">Banda media — Sub-6 GHz</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted)">Bilanciata · la più diffusa oggi · medie distanze</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:80px;font-size:12px;color:var(--muted);text-align:right">26 GHz</div>
+        <div style="flex:1;height:32px;background:rgba(255,123,114,0.15);border:1px solid rgba(255,123,114,0.3);border-radius:6px;display:flex;align-items:center;padding:0 10px">
+          <span style="font-size:11px;font-weight:600;color:var(--red)">mmWave — Banda alta · massima velocità · corto range · molti ripetitori</span>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:0.75rem">⚠️ In Italia la mmWave è quasi inesistente per via dei costi elevati (apparecchiature + densità ripetitori).</div>
+  </div>
+
+  <!-- NETWORK SLICING -->
+  <div class="diagram-box">
+    <div class="diagram-title">Network Slicing</div>
+    <div class="callout callout-blue">
+      <strong>Concetto chiave</strong>
+      <p>Più reti virtuali operano su un'unica infrastruttura fisica. Ogni slice è ottimizzata per un tipo specifico di traffico (velocità, latenza, affidabilità). Il 5G gestisce tutto su un'unica rete fisica.</p>
+    </div>
+    <div class="grid grid-3">
+      <div class="card" style="border-color:rgba(57,211,83,0.3)">
+        <div style="font-size:18px;margin-bottom:6px">📡</div>
+        <div class="card-label" style="color:var(--teal)">IoT Slice (mMTC)</div>
+        <h3>Alta densità</h3>
+        <p>Milioni di dispositivi a basso consumo. Sensori ambientali, contatori intelligenti, tracker.</p>
+      </div>
+      <div class="card" style="border-color:rgba(88,166,255,0.3)">
+        <div style="font-size:18px;margin-bottom:6px">🚗</div>
+        <div class="card-label" style="color:var(--blue)">URLLC Slice</div>
+        <h3>Ultra-bassa latenza</h3>
+        <p>Comunicazioni critiche. Veicoli autonomi, controllo industriale, telemedicina real-time.</p>
+      </div>
+      <div class="card" style="border-color:rgba(255,123,114,0.3)">
+        <div style="font-size:18px;margin-bottom:6px">📺</div>
+        <div class="card-label" style="color:var(--red)">eMBB Slice</div>
+        <h3>Alta bandwidth</h3>
+        <p>Telecamere 4K/8K, realtà aumentata/virtuale, streaming ad altissima qualità.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TECNICHE DI ACCESSO IoT -->
+  <div class="diagram-box">
+    <div class="diagram-title">Tecniche di accesso 5G specifiche per IoT</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Tecnologia</th>
+          <th>Banda</th>
+          <th>Velocità</th>
+          <th>Caso d'uso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge" style="background:rgba(240,136,62,0.15);color:var(--orange)">NB-IoT</span></td>
+          <td>180 kHz</td>
+          <td style="font-family:var(--mono)">~20 Kbps</td>
+          <td>Bassa complessità, massima durata batteria, deep indoor</td>
+        </tr>
+        <tr>
+          <td><span class="badge" style="background:rgba(88,166,255,0.15);color:var(--blue)">LTE-M (eMTC)</span></td>
+          <td>1.4 MHz</td>
+          <td style="font-family:var(--mono)">1 Mbps</td>
+          <td>Dispositivi mobili, roaming, voce IoT</td>
+        </tr>
+        <tr>
+          <td><span class="badge" style="background:rgba(57,211,83,0.15);color:var(--teal)">RedCap</span></td>
+          <td>5G nativo</td>
+          <td style="font-family:var(--mono)">Variable</td>
+          <td>IoT 5G nativo (3GPP Rel.17) — ridotta complessità vs. 5G full</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</section>
+
+<!-- ======================== CONFRONTO ======================== -->
+<section class="section" id="sec-compare">
+
+  <div class="section-hero" style="border-top:3px solid var(--yellow)">
+    <div class="section-icon" style="background:rgba(227,179,65,0.1);border:1px solid rgba(227,179,65,0.3);font-size:22px">⚖️</div>
+    <div>
+      <h2 style="color:var(--yellow)">Confronto tecnologie LPWAN</h2>
+      <p>Panoramica comparativa dei principali standard wireless per IoT: dalla portata al consumo energetico.</p>
+    </div>
+  </div>
+
+  <div class="diagram-box" style="overflow-x:auto">
+    <div class="diagram-title">Tabella comparativa</div>
+    <table class="compare-table" style="min-width:700px">
+      <thead>
+        <tr>
+          <th>Parametro</th>
+          <th style="color:var(--blue)">BLE</th>
+          <th style="color:var(--teal)">LoRaWAN</th>
+          <th style="color:var(--orange)">NB-IoT</th>
+          <th style="color:var(--purple)">Sigfox</th>
+          <th style="color:var(--red)">5G (mMTC)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="color:var(--muted)">Range</td><td>~100m</td><td style="color:var(--teal);font-weight:600">15 km</td><td>10 km+</td><td>50 km</td><td>Variable</td></tr>
+        <tr><td style="color:var(--muted)">Data Rate</td><td style="color:var(--blue);font-weight:600">300 Kbps</td><td>290 bps–50 Kbps</td><td>~20 Kbps</td><td>100 bps</td><td>200 Kbps–1 Mbps</td></tr>
+        <tr><td style="color:var(--muted)">Consumo</td><td>Basso</td><td style="color:var(--teal);font-weight:600">Molto basso</td><td style="color:var(--teal);font-weight:600">Molto basso</td><td style="color:var(--teal);font-weight:600">Molto basso</td><td>Medio</td></tr>
+        <tr><td style="color:var(--muted)">Batteria attesa</td><td>Mesi–anni</td><td style="color:var(--teal)">105 mesi</td><td>10+ anni</td><td>12+ anni</td><td>18 mesi</td></tr>
+        <tr><td style="color:var(--muted)">Licenza spettro</td><td>No</td><td>No</td><td style="color:var(--orange)">Sì</td><td>No</td><td style="color:var(--red)">Sì</td></tr>
+        <tr><td style="color:var(--muted)">SIM richiesta</td><td>No</td><td>No</td><td style="color:var(--orange)">Sì</td><td>No</td><td style="color:var(--red)">Sì</td></tr>
+        <tr><td style="color:var(--muted)">Frequenza</td><td>2.4 GHz ISM</td><td>868 MHz ISM</td><td>800 MHz</td><td>Sub-GHz</td><td>700 MHz–26 GHz</td></tr>
+        <tr><td style="color:var(--muted)">Modulazione</td><td>GFSK</td><td>CSS (Chirp)</td><td>QPSK</td><td>UNB/BPSK</td><td>OFDMA</td></tr>
+        <tr><td style="color:var(--muted)">Topologia</td><td>Point-to-point</td><td>Star of Stars</td><td>Cellulare</td><td>Star</td><td>Cellulare</td></tr>
+        <tr><td style="color:var(--muted)">Mobilità</td><td>Sì</td><td>Limitata</td><td>Limitata</td><td>No</td><td>Sì</td></tr>
+        <tr><td style="color:var(--muted)">Sicurezza</td><td>✓</td><td style="color:var(--teal)">AES-128</td><td style="color:var(--teal)">✓</td><td>No</td><td style="color:var(--teal)">✓</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- QUANDO USARE COSA -->
+  <div class="diagram-box">
+    <div class="diagram-title">Guida rapida — quando usare cosa?</div>
+    <div class="grid grid-2">
+      <div>
+        <div class="callout callout-blue" style="margin-bottom:0.75rem">
+          <strong>Scegli BLE se…</strong>
+          <p>Indoor · corto raggio · wearable · beacon · real-time · smartphone come hub</p>
+        </div>
+        <div class="callout callout-teal" style="margin-bottom:0.75rem">
+          <strong>Scegli LoRaWAN se…</strong>
+          <p>Lungo raggio · campo aperto o città · no SIM · dati piccoli periodici · agricoltura, smart city, utility</p>
+        </div>
+      </div>
+      <div>
+        <div class="callout callout-orange" style="margin-bottom:0.75rem">
+          <strong>Scegli NB-IoT se…</strong>
+          <p>Deep indoor · infrastruttura cellulare esistente · mobilità · sicurezza enterprise · contatori idrici/gas</p>
+        </div>
+        <div class="callout" style="background:rgba(255,123,114,0.1);border-color:var(--red);color:var(--red);margin-bottom:0">
+          <strong>Scegli 5G/URLLC se…</strong>
+          <p>Latenza critica · veicoli autonomi · industria 4.0 · telemedicina real-time · alta densità di dispositivi</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RADAR CHART TESTUALE -->
+  <div class="diagram-box">
+    <div class="diagram-title">Posizionamento visivo: portata vs data rate</div>
+    <div style="position:relative;height:280px;background:var(--bg3);border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+      <div style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted)">◀ Portata ▶</div>
+      <div style="position:absolute;left:8px;top:50%;transform:translateY(-50%) rotate(-90deg);font-size:11px;color:var(--muted);white-space:nowrap">▲ Data Rate ▼</div>
+      <!-- Grid lines -->
+      <div style="position:absolute;top:0;left:50%;width:1px;height:100%;background:rgba(255,255,255,0.05)"></div>
+      <div style="position:absolute;left:0;top:50%;width:100%;height:1px;background:rgba(255,255,255,0.05)"></div>
+      <!-- Nodes -->
+      <div style="position:absolute;top:25%;left:20%;transform:translate(-50%,-50%)">
+        <div style="background:var(--blue-dim);border:1.5px solid var(--blue);border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--blue)">BLE</div>
+        <div style="text-align:center;font-size:9px;color:var(--muted);margin-top:3px">300 Kbps · ~100m</div>
+      </div>
+      <div style="position:absolute;top:15%;left:35%;transform:translate(-50%,-50%)">
+        <div style="background:rgba(227,179,65,0.1);border:1.5px solid var(--yellow);border-radius:50%;width:62px;height:62px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--yellow)">WiFi</div>
+        <div style="text-align:center;font-size:9px;color:var(--muted);margin-top:3px">100+ Mbps · ~50m</div>
+      </div>
+      <div style="position:absolute;top:70%;left:75%;transform:translate(-50%,-50%)">
+        <div style="background:var(--teal-dim);border:1.5px solid var(--teal);border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--teal)">LoRa</div>
+        <div style="text-align:center;font-size:9px;color:var(--muted);margin-top:3px">50 Kbps · 15 km</div>
+      </div>
+      <div style="position:absolute;top:65%;left:65%;transform:translate(-50%,-50%)">
+        <div style="background:rgba(240,136,62,0.1);border:1.5px solid var(--orange);border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--orange)">NB-IoT</div>
+        <div style="text-align:center;font-size:9px;color:var(--muted);margin-top:3px">20 Kbps · 10 km</div>
+      </div>
+      <div style="position:absolute;top:75%;left:85%;transform:translate(-50%,-50%)">
+        <div style="background:rgba(188,140,255,0.1);border:1.5px solid var(--purple);border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--purple)">Sigfox</div>
+        <div style="text-align:center;font-size:9px;color:var(--muted);margin-top:3px">100 bps · 50 km</div>
+      </div>
+      <div style="position:absolute;top:15%;left:60%;transform:translate(-50%,-50%)">
+        <div style="background:rgba(255,123,114,0.1);border:1.5px solid var(--red);border-radius:50%;width:54px;height:54px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--red)">4G/5G</div>
+        <div style="text-align:center;font-size:9px;color:var(--muted);margin-top:3px">Gbps · naz.</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+</div><!-- end content -->
+
+<div class="footer">
+  Appunti TPSIT — Reti Wireless IoT · 5F/5M 2025/26 · Bluetooth · BLE · LoRaWAN · NB-IoT · 5G
+</div>
+
+<script>
+function show(tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-'+tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// PICONET drawing
+function drawPiconet(containerId, slaveCount, hasParked, small) {
+  const el = document.getElementById(containerId);
+  const cx = small ? 65 : 90, cy = small ? 65 : 90;
+  const r = small ? 55 : 72;
+  const masterSize = small ? 38 : 52;
+  
+  el.innerHTML = '';
+
+  // Master
+  const master = document.createElement('div');
+  master.className = 'master-node';
+  master.style.width = masterSize+'px'; master.style.height = masterSize+'px';
+  master.style.fontSize = small ? '9px' : '10px';
+  master.textContent = 'MASTER';
+  el.appendChild(master);
+
+  for (let i = 0; i < slaveCount; i++) {
+    const angle = (i / slaveCount) * 2 * Math.PI - Math.PI/2;
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+
+    // Line
+    const line = document.createElement('div');
+    line.className = 'connector';
+    const dx = x - cx, dy = y - cy;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    const deg = Math.atan2(dy, dx) * 180 / Math.PI;
+    line.style.cssText = `position:absolute;top:${cy}px;left:${cx}px;width:${len}px;height:1px;transform-origin:0 0;transform:rotate(${deg}deg);background:rgba(88,166,255,0.25)`;
+    el.appendChild(line);
+
+    // Node
+    const node = document.createElement('div');
+    const isParked = hasParked && i === slaveCount - 1;
+    node.className = 'slave-node ' + (isParked ? 'slave-park' : 'slave-active');
+    const ns = small ? 28 : 34;
+    node.style.cssText = `left:${x - ns/2}px;top:${y - ns/2}px;width:${ns}px;height:${ns}px`;
+    node.textContent = isParked ? 'PRK' : 'S'+(i+1);
+    el.appendChild(node);
+  }
+}
+
+drawPiconet('p1', 5, false, false);
+drawPiconet('p2', 3, true, true);
+drawPiconet('p3', 3, false, true);
+
+// FHSS visual
+(function() {
+  const slots = 18;
+  const activeBT = [2,6,10,15];
+  const activeOther = [4,9,13];
+  const vis = document.getElementById('fhssVisual');
+  for (let row = 0; row < 4; row++) {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'freq-row';
+    const lbl = document.createElement('div');
+    lbl.className = 'freq-label';
+    lbl.textContent = (2402 + row*20) + 'M';
+    rowEl.appendChild(lbl);
+    const slotsEl = document.createElement('div');
+    slotsEl.className = 'freq-slots';
+    for (let i = 0; i < slots; i++) {
+      const s = document.createElement('div');
+      s.className = 'slot';
+      const hopping = (i + row * 3) % slots;
+      if (activeBT.includes(hopping)) s.classList.add('active-bt');
+      else if (activeOther.includes(hopping)) s.classList.add('active-other');
+      slotsEl.appendChild(s);
+    }
+    rowEl.appendChild(slotsEl);
+    vis.appendChild(rowEl);
+  }
+})();
+
+// Spreading Factor bars
+(function() {
+  const sfs = [
+    {sf:'SF7', bps:'5470', dist:'2 km', pct:15, color:'#39d353'},
+    {sf:'SF8', bps:'3125', dist:'4 km', pct:25, color:'#58a6ff'},
+    {sf:'SF9', bps:'1760', dist:'6 km', pct:40, color:'#e3b341'},
+    {sf:'SF10', bps:'980', dist:'8 km', pct:55, color:'#f0883e'},
+    {sf:'SF11', bps:'440', dist:'11 km', pct:75, color:'#bc8cff'},
+    {sf:'SF12', bps:'290', dist:'14 km', pct:100, color:'#ff7b72'},
+  ];
+  const container = document.getElementById('sfBars');
+  sfs.forEach(s => {
+    const row = document.createElement('div');
+    row.className = 'sf-bar';
+    row.innerHTML = `
+      <span class="sf-label" style="color:${s.color}">${s.sf}</span>
+      <div class="sf-track">
+        <div class="sf-fill" style="width:${s.pct}%;background:${s.color}22;border-right:2px solid ${s.color}"></div>
+      </div>
+      <span class="sf-meta">${s.bps} bps · ${s.dist}</span>
+    `;
+    container.appendChild(row);
+  });
+})();
+</script>
+</body>
+</html>
